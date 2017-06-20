@@ -90,12 +90,21 @@
                     <th>{{ vacationplannerform.weekends(class_='form-control') }}</th>
                 </tr>
                  <tr>
-                  <th><label for='cost'>How important is cost</label></th>
-                  <td><input type="range" min="0" max="1" value="0.5" step="0.1" /></td>
+                     <th><label for="cost">How important is cost</label></th>
+                    <td><p>
+                       {{ vacationplannerform.costslider.label }}:
+                       {{ vacationplannerform.costslider(min=0, max=1, oninput="outputUpdateCostSlider(value)") }}
+                       <output for="age" id="selected_cost">{{ vacationplannerform.costslider.data }}</output>
+                  </p></td>
                 </tr>
+
                 <tr>
-                  <th><label for='duration'>How important is duration</label></th>
-                  <td><input type="range" min="0" max="1" value="0.5" step="0.1" /></td>
+                     <th><label for="duration">How important is duration</label></th>
+                    <td><p>
+                       {{ vacationplannerform.durationslider.label }}:
+                       {{ vacationplannerform.durationslider(min=0, max=1, oninput="outputUpdateDurationSlider(value)") }}
+                       <output for="age" id="selected_duration">{{ vacationplannerform.durationslider.data }}</output>
+                  </p></td>
                 </tr>
                 <tr><th><button type="submit" class="btn btn-primary btn-lg">Plan my vacation</button></th></tr>
                 </thead>
@@ -145,6 +154,20 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <script src="../static/js/bootstrap.min.js"></script>
-    <script src="../static/js/slider.js"></script>
+    <script>
+      function updateSlider(slideAmount) {
+              console.log("insode the js function");
+              var sliderDiv = document.getElementById("sliderAmount");
+              sliderDiv.innerHTML = slideAmount;
+    }
+
+    function outputUpdateCostSlider(slider) {
+    document.querySelector('#selected_cost').value = slider;
+    }
+
+    function outputUpdateDurationSlider(slider) {
+    document.querySelector('#selected_duration').value = slider;
+    }
+    </script>
   </body>
 </html>
