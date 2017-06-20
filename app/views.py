@@ -31,15 +31,18 @@ def planner():
 def reference():
     return render_template('reference.html')
 
-#def generateDatePairs(weekends):
-#    datePairs = []
-#    currentdate = datetime.datetime.now()
-#    for _ in range(30):
-#        if weekends:
-
-
-
-
+def generateDatePairs(weekends, days):
+    datePairs = []
+    currentdate = datetime.datetime.now()
+    for i in range(7):
+        testdate = currentdate + datetime.timedelta(days=i)
+        print(testdate)
+        if weekends:
+            if testdate.weekday() in range(7-days,6):
+                datePairs.append((str(testdate), str(testdate + datetime.timedelta(days=days))))
+        else:
+            datePairs.append((str(testdate), str(testdate + datetime.timedelta(days=days))))
+    return datePairs
 
 
 def fetchflights_roundtrip(departureDate, returnDate, departureAirport, arrivalAirport):
