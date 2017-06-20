@@ -14,6 +14,7 @@ def planner():
     if vacationplannerform.is_submitted():
         if vacationplannerform.validate():
             # Iterate over dates
+            print vacationplannerform.data
             departureDate = "2017-12-15"
             returnDate = "2017-12-18"
             departureAirport = vacationplannerform.source.data
@@ -22,6 +23,8 @@ def planner():
             return render_template("results.html", vacationplannerform=vacationplannerform, flights=flights)
         else:
             error=True
+    if vacationplannerform.validate_on_submit():
+        print vacationplannerform
 
     return render_template("planner.html", vacationplannerform=vacationplannerform, error=error)
 
@@ -49,7 +52,8 @@ def fetchflights_roundtrip(departureDate, returnDate, departureAirport, arrivalA
     legs = flightdetails["legs"]
     legsdict = {leg["legId"]:leg for leg in legs}
     offers = flightdetails["offers"]
-
+    #ks = list(legsdict)
+    #print ks[0]
     results = []
 
     for offer in offers[:2]:
