@@ -37,6 +37,7 @@ def planner():
             return render_template("results.html", vacationplannerform=vacationplannerform, offers=bestoffers)
         else:
             error=True
+    
 
     return render_template("planner.html", vacationplannerform=vacationplannerform, error=error)
 
@@ -90,6 +91,7 @@ def fetchflights_roundtrip(departureDate, returnDate, departureAirport, arrivalA
     results = []
     legs = flightdetails["legs"]
     offers = flightdetails["offers"]
+
     legsdict = {}
 
     # Parse legs
