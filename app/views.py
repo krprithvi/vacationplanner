@@ -14,7 +14,6 @@ def planner():
     if vacationplannerform.is_submitted():
         if vacationplannerform.validate():
             # Iterate over dates
-            print vacationplannerform.data
             departureDate = "2017-12-15"
             returnDate = "2017-12-18"
             departureAirport = vacationplannerform.source.data
