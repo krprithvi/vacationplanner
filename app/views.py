@@ -22,8 +22,7 @@ def planner():
             return render_template("results.html", vacationplannerform=vacationplannerform, flights=flights)
         else:
             error=True
-    if vacationplannerform.validate_on_submit():
-        print vacationplannerform
+    
 
     return render_template("planner.html", vacationplannerform=vacationplannerform, error=error)
 

@@ -10,6 +10,5 @@ class VacationPlannerForm(FlaskForm):
     destination = StringField('destination',validators=[DataRequired()])
     days = IntegerField('days',validators=[DataRequired()])
     weekends = BooleanField('weekends',validators=[DataRequired()], default=True)
-    sliderAmount = HiddenField ('sliderAmount')
     costslider = DecimalRangeField('costslider', default=0)
     durationslider = DecimalRangeField('durationslider', default=0)
