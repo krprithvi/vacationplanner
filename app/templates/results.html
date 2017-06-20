@@ -96,7 +96,7 @@
           </div>
         </div>
       </div><!-- /.col-sm-6 -->
-      {% for flight in flights %}
+      {% for offer in offers %}
       <div class="col-sm-6">
         <div class="panel panel-default">
           <div class="panel-heading">
@@ -107,9 +107,9 @@
                 <a href="#" class="list-group-item">
                   <h4 class="list-group-item-heading">To</h4>
                 </a>
-              {% for segment in flight[0]["segments"] %}
+              {% for segment in offer.legs[0].segments %}
                 <a href="#" class="list-group-item">
-                  <h4 class="list-group-item-heading">{{ segment["airlineName"] }}</h4>
+                  <h4 class="list-group-item-heading">{{ segment.airlineName }}</h4>
                   <p class="list-group-item-text">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
                 </a>
               {% endfor %}
@@ -118,9 +118,9 @@
               <a href="#" class="list-group-item">
                 <h4 class="list-group-item-heading">From</h4>
               </a>
-                {% for segment in flight[1]["segments"] %}
+                {% for segment in offer.legs[1].segments %}
                 <a href="#" class="list-group-item">
-                  <h4 class="list-group-item-heading">{{ segment["airlineName"] }}</h4>
+                  <h4 class="list-group-item-heading">{{ segment.airlineName }}</h4>
                   <p class="list-group-item-text">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
                 </a>
                 {% endfor %}
