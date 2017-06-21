@@ -18,8 +18,8 @@ def planner():
     if vacationplannerform.is_submitted():
         if vacationplannerform.validate():
             # Create Trip Attribute objects
-            cost = Cost()
-            travelDuration = TravelDuration()
+            cost = Cost(vacationplannerform.costslider.data)
+            travelDuration = TravelDuration(vacationplannerform.durationslider.data)
 
             # Iterate over dates
             datePairs = generateDatePairs(vacationplannerform.weekends.data, vacationplannerform.days.data)
@@ -28,13 +28,17 @@ def planner():
             arrivalAirport = vacationplannerform.destination.data
             tripAttributes = [cost, travelDuration]
 
-            bestoffers = []
-            for i in range(len(datePairs)):
-                offers = fetchflights_roundtrip(datePairs[i][0], datePairs[i][1], departureAirport, arrivalAirport, tripAttributes)
-                bestofferfortheday = rateOffersAndReturnBest(offers, tripAttributes)
-                bestoffers.append(bestofferfortheday)
-
-            return render_template("results.html", vacationplannerform=vacationplannerform, offers=bestoffers)
+            try:
+                bestoffers = []
+                for i in range(1):
+                    offers = fetchflights_roundtrip(datePairs[i][0], datePairs[i][1], departureAirport, arrivalAirport, tripAttributes)
+                    bestofferfortheday = rateOffersAndReturnBest(offers, tripAttributes)
+                    bestoffers.append(bestofferfortheday)
+                bestoffers = sorted(bestoffers, key=lambda offer: offer.rating, reverse=True)
+                return render_template("results.html", vacationplannerform=vacationplannerform, offers=bestoffers)
+            except Exception as e:
+                print(str(e))
+                error = True
         else:
             error=True
     
@@ -64,6 +68,7 @@ def generateDatePairs(weekends, days):
 def rateOffersAndReturnBest(offers, tripAttributes):
     bestoffer = offers[0]
     bestofferrating = -float("inf")
+    ratings = []
     for offer in offers:
         rating = 0
         for tripAttribute in tripAttributes:
@@ -73,9 +78,11 @@ def rateOffersAndReturnBest(offers, tripAttributes):
             elif tripAttribute.type == 'Offer':
                 rating += tripAttribute.weight * tripAttribute.rate(getattr(offer, tripAttribute.parameter))
         offer.rating = rating
+        ratings.append(rating)
         if bestofferrating < offer.rating:
             bestoffer = offer
             bestofferrating = offer.rating
+    print(ratings)
     return bestoffer
 
 # Build Flight Objects
@@ -107,7 +114,7 @@ def fetchflights_roundtrip(departureDate, returnDate, departureAirport, arrivalA
                 tripAttribute.parsingInstruction(leg[tripAttribute.parameter])
 
     # Parse offers
-    for offer in offers[:2]:
+    for offer in offers:
         offer_legs = list(map(lambda legid: legsdict[legid], offer["legIds"]))
         totalFare = offer["totalFare"]
         seatsRemaining = offer["seatsRemaining"]

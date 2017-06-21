@@ -7,6 +7,9 @@ class TravelDuration(TripAttribute):
     parameter = "travelDuration"
     type = "Leg"
 
+    def __init__(self, weight):
+        self.weight = float(weight)
+
     def parsingInstruction(self, object):
         try:
             travelDuration = object

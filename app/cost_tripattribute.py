@@ -6,6 +6,9 @@ class Cost(TripAttribute):
     parameter = "totalFare"
     type="Offer"
 
+    def __init__(self, weight):
+        self.weight = float(weight)
+
     def parsingInstruction(self, totalFare):
         try:
             totalFare = float(totalFare)
