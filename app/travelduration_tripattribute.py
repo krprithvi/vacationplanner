@@ -18,9 +18,9 @@ class TravelDuration(TripAttribute):
             if len(time) == 2:
                 hours, minutes = time
                 totalminutes = int(hours)*60 + int(minutes)
-            elif 'H' in time:
+            elif 'H' in travelDuration:
                 totalminutes = int(time[0])*60
-            elif 'M' in time:
+            elif 'M' in travelDuration:
                 totalminutes = int(time[0])
             else:
                 totalminutes = 30
@@ -37,8 +37,16 @@ class TravelDuration(TripAttribute):
         try:
             travelDuration = object
             hours_minutes_regex = re.compile('\d+')
-            hours, minutes = hours_minutes_regex.findall(travelDuration)
-            totalminutes = int(hours)*60 + int(minutes)
+            time = hours_minutes_regex.findall(travelDuration)
+            if len(time) == 2:
+                hours, minutes = time
+                totalminutes = int(hours)*60 + int(minutes)
+            elif 'H' in travelDuration:
+                totalminutes = int(time[0])*60
+            elif 'M' in travelDuration:
+                totalminutes = int(time[0])
+            else:
+                totalminutes = 30
 
             if self.max == self.min:
                 return 0.5

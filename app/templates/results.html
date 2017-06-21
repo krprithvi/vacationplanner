@@ -38,25 +38,13 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">Vacation Planner</a>
+          <a class="navbar-brand" href="#">Expedia</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
             <li class="active"><a href="#">Home</a></li>
             <li><a href="#about">About</a></li>
             <li><a href="#contact">Contact</a></li>
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Dropdown <span class="caret"></span></a>
-              <ul class="dropdown-menu" role="menu">
-                <li><a href="#">Action</a></li>
-                <li><a href="#">Another action</a></li>
-                <li><a href="#">Something else here</a></li>
-                <li class="divider"></li>
-                <li class="dropdown-header">Nav header</li>
-                <li><a href="#">Separated link</a></li>
-                <li><a href="#">One more separated link</a></li>
-              </ul>
-            </li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -90,20 +78,16 @@
                     <th>{{ vacationplannerform.weekends(class_='form-control') }}</th>
                 </tr>
                  <tr>
-                     <th><label for="cost">How important is cost</label></th>
+                     <th><label for="cost">How important is cost for you ?</label></th>
                     <td><p>
-                       {{ vacationplannerform.costslider.label }}:
                        {{ vacationplannerform.costslider(min=0, max=1, oninput="outputUpdateCostSlider(value)") }}
-                       <output for="age" id="selected_cost">{{ vacationplannerform.costslider.data }}</output>
                   </p></td>
                 </tr>
 
                 <tr>
-                     <th><label for="duration">How important is duration</label></th>
+                     <th><label for="duration">How important is duration for you ?</label></th>
                     <td><p>
-                       {{ vacationplannerform.durationslider.label }}:
                        {{ vacationplannerform.durationslider(min=0, max=1, oninput="outputUpdateDurationSlider(value)") }}
-                       <output for="age" id="selected_duration">{{ vacationplannerform.durationslider.data }}</output>
                   </p></td>
                 </tr>
                 <tr><th><button type="submit" class="btn btn-primary btn-lg">Plan my vacation</button></th></tr>
@@ -113,38 +97,57 @@
           </div>
         </div>
       </div><!-- /.col-sm-6 -->
-      {% for offer in offers %}
       <div class="col-sm-6">
+      {% for offer in offers %}
         <div class="panel panel-default">
           <div class="panel-heading">
-            <h3 class="panel-title">Flight</h3>
+            Fly from <h4 class="panel-title">{{ offer.legs[0].segments[0].departureAirportLocation }}</h4>
+            <h4><a style="float:right; padding-left:10px;"> <t/> on {{ offer.legs[0].segments[0].departureTimeFormatted }} </a></h4>
+            <h4> <a style="float:right"> For {{ offer.totalFare }}$ </a></h4>
+            To <h4 class="panel-title">{{ offer.legs[0].segments[-1].arrivalAirportLocation }} </h4>
           </div>
           <div class="panel-body">
               <div class="list-group">
                 <a href="#" class="list-group-item">
-                  <h4 class="list-group-item-heading">To</h4>
+                  <h5 class="list-group-item-heading">
+                    Duration : {% if offer.legs[0].travelDurationHours %}
+                    {{ offer.legs[0].travelDurationHours }} hours
+                    {% endif %}
+                    {% if offer.legs[0].travelDurationMinutes %}
+                    and {{ offer.legs[0].travelDurationMinutes}} minutes</h5>
+                  {% endif %}
                 </a>
               {% for segment in offer.legs[0].segments %}
                 <a href="#" class="list-group-item">
-                  <h4 class="list-group-item-heading">{{ segment.airlineName }}</h4>
-                  <p class="list-group-item-text">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
+                  <h5 class="list-group-item-heading">{{ segment.airlineName }} | {{ segment.airlineCode }} {{ segment.flightNumber }} | {{ segment.departureAirportLocation }} - {{ segment.arrivalAirportLocation}}</h5>
+                  <h6><i>{{ segment.arrivalTime }} - {{ segment.departureTime }}</i></h6>
                 </a>
               {% endfor %}
               </div>
-            <div class="list-group">
-              <a href="#" class="list-group-item">
-                <h4 class="list-group-item-heading">From</h4>
-              </a>
+                <div class="list-group">
+                  {% if offer.legs[1].travelDurationHours or offer.legs[1].travelDurationMinutes %}
+                  <a href="#" class="list-group-item">
+                    <h5 class="list-group-item-heading">
+                      {% if offer.legs[1].travelDurationHours %}
+                      Duration : {{ offer.legs[1].travelDurationHours }} hours
+                      {% endif %}
+                      {% if offer.legs[1].travelDurationMinutes %}
+                      and {{ offer.legs[1].travelDurationMinutes}} minutes</h5>
+                    {% endif %}
+                  </a>
+                  {% endif %}
                 {% for segment in offer.legs[1].segments %}
                 <a href="#" class="list-group-item">
-                  <h4 class="list-group-item-heading">{{ segment.airlineName }}</h4>
-                  <p class="list-group-item-text">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
+                  <h5 class="list-group-item-heading">{{ segment.airlineName }} | {{ segment.airlineCode }} {{ segment.flightNumber }} | {{ segment.departureAirportLocation }} - {{ segment.arrivalAirportLocation}}</h5>
+                  <h6><i>{{ segment.arrivalTime }} - {{ segment.departureTime }}</i></h6>
                 </a>
                 {% endfor %}
+              </div>
+            <div class="list-group">
             </div>
           </div>
-        </div>
         {% endfor %}
+        </div>
 
     </div> <!-- /container -->
 

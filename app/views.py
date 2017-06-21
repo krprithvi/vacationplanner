@@ -17,24 +17,28 @@ def planner():
     vacationplannerform = VacationPlannerForm(request.form)
     if vacationplannerform.is_submitted():
         if vacationplannerform.validate():
-            # Create Trip Attribute objects
-            cost = Cost(vacationplannerform.costslider.data)
-            travelDuration = TravelDuration(vacationplannerform.durationslider.data)
 
             # Iterate over dates
             datePairs = generateDatePairs(vacationplannerform.weekends.data, vacationplannerform.days.data)
-            print(datePairs)
             departureAirport = vacationplannerform.source.data
             arrivalAirport = vacationplannerform.destination.data
-            tripAttributes = [cost, travelDuration]
 
             try:
                 bestoffers = []
-                for i in range(1):
+                for i in range(len(datePairs)):
+                    # Create Trip Attribute objects
+                    cost = Cost(vacationplannerform.costslider.data)
+                    travelDuration = TravelDuration(vacationplannerform.durationslider.data)
+                    tripAttributes = [cost, travelDuration]
                     offers = fetchflights_roundtrip(datePairs[i][0], datePairs[i][1], departureAirport, arrivalAirport, tripAttributes)
                     bestofferfortheday = rateOffersAndReturnBest(offers, tripAttributes)
                     bestoffers.append(bestofferfortheday)
+                cost = Cost(vacationplannerform.costslider.data)
+                travelDuration = TravelDuration(vacationplannerform.durationslider.data)
+                tripAttributes = [cost, travelDuration]
+                calibrateBestOffers(bestoffers, tripAttributes)
                 bestoffers = sorted(bestoffers, key=lambda offer: offer.rating, reverse=True)
+
                 return render_template("results.html", vacationplannerform=vacationplannerform, offers=bestoffers)
             except Exception as e:
                 print(str(e))
@@ -44,6 +48,33 @@ def planner():
     
 
     return render_template("planner.html", vacationplannerform=vacationplannerform, error=error)
+
+def calibrateBestOffers(bestOffers, tripAttributes):
+    legs = []
+    for offer in bestOffers:
+        legs += offer.legs
+
+    for leg in legs:
+        # Get the trip Attributes for legs
+        for tripAttribute in tripAttributes:
+            if tripAttribute.type == "Leg":
+                tripAttribute.parsingInstruction(getattr(leg, tripAttribute.parameter))
+
+    for offer in bestOffers:
+        # Get the trip Attributes for legs
+        for tripAttribute in tripAttributes:
+            if tripAttribute.type == "Offer":
+                tripAttribute.parsingInstruction(getattr(offer, tripAttribute.parameter))
+
+    for offer in bestOffers:
+        rating = 0
+        for tripAttribute in tripAttributes:
+            if tripAttribute.type == 'Leg':
+                for leg in offer.legs:
+                    rating += tripAttribute.weight * tripAttribute.rate(getattr(leg, tripAttribute.parameter))
+            elif tripAttribute.type == 'Offer':
+                rating += tripAttribute.weight * tripAttribute.rate(getattr(offer, tripAttribute.parameter))
+            offer.rating = rating
 
 
 # Reference for styling
@@ -55,7 +86,7 @@ def reference():
 def generateDatePairs(weekends, days):
     datePairs = []
     currentdate = datetime.datetime.now()
-    for i in range(20):
+    for i in range(14):
         testdate = currentdate + datetime.timedelta(days=i)
         if weekends:
             if testdate.weekday() in range(7-days,6):
@@ -68,7 +99,6 @@ def generateDatePairs(weekends, days):
 def rateOffersAndReturnBest(offers, tripAttributes):
     bestoffer = offers[0]
     bestofferrating = -float("inf")
-    ratings = []
     for offer in offers:
         rating = 0
         for tripAttribute in tripAttributes:
@@ -78,11 +108,9 @@ def rateOffersAndReturnBest(offers, tripAttributes):
             elif tripAttribute.type == 'Offer':
                 rating += tripAttribute.weight * tripAttribute.rate(getattr(offer, tripAttribute.parameter))
         offer.rating = rating
-        ratings.append(rating)
         if bestofferrating < offer.rating:
             bestoffer = offer
             bestofferrating = offer.rating
-    print(ratings)
     return bestoffer
 
 # Build Flight Objects

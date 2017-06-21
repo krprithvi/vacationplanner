@@ -12,12 +12,12 @@ class Leg:
         self.travelDuration = travelDuration
         try:
             hours_minutes_regex = re.compile('\d+')
-            time = hours_minutes_regex.findall(travelDuration)
+            time = hours_minutes_regex.findall(self.travelDuration)
             if len(time) == 2:
                 self.travelDurationHours, self.travelDurationMinutes = time
-            elif 'H' in time:
+            elif 'H' in travelDuration:
                 self.travelDurationHours = time[0]
-            elif 'M' in time:
+            elif 'M' in travelDuration:
                 self.travelDurationMinutes = time[1]
         except Exception as e:
             print(str(e))
