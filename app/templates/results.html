@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -45,6 +44,7 @@
             <li class="active"><a href="#">Home</a></li>
             <li><a href="#about">About</a></li>
             <li><a href="#contact">Contact</a></li>
+            <li><a href="#contact">{{ name }}</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -70,7 +70,7 @@
                     <th>{{ vacationplannerform.destination(class_='form-control') }}</th>
                 </tr>
                 <tr>
-                    <th><label for='days'>I want to go on a vacation for </label></th>
+                    <th><label for='days'>How many days would you like to go on vacation for ?</label></th>
                     <th>{{ vacationplannerform.days(class_='form-control') }}</th>
                 </tr>
                 <tr>
@@ -90,6 +90,12 @@
                        {{ vacationplannerform.durationslider(min=0, max=1, oninput="outputUpdateDurationSlider(value)") }}
                   </p></td>
                 </tr>
+                <tr>
+                  <th><label for="favoriteairline">How Important is it for you to travel via your favorite airline <i>{{ favoriteAirline }}</i> ?</label></th>
+                  <td><p>
+                    {{ vacationplannerform.favoriteairlineslider(min=0, max=1, oninput="outputUpdateFavoriteAirlineSlider(value)") }}
+                  </p></td>
+                </tr>
                 <tr><th><button type="submit" class="btn btn-primary btn-lg">Plan my vacation</button></th></tr>
                 </thead>
                 </table>
@@ -101,7 +107,7 @@
       {% for offer in offers %}
         <div class="panel panel-default">
           <div class="panel-heading">
-            Fly from <h4 class="panel-title">{{ offer.legs[0].segments[0].departureAirportLocation }}</h4>
+            Fly From <h4 class="panel-title">{{ offer.legs[0].segments[0].departureAirportLocation }}</h4>
             <h4><a style="float:right; padding-left:10px;"> <t/> on {{ offer.legs[0].segments[0].departureTimeFormatted }} </a></h4>
             <h4> <a style="float:right"> For {{ offer.totalFare }}$ </a></h4>
             To <h4 class="panel-title">{{ offer.legs[0].segments[-1].arrivalAirportLocation }} </h4>
@@ -150,27 +156,6 @@
         </div>
 
     </div> <!-- /container -->
-
-
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-    <script src="../static/js/bootstrap.min.js"></script>
-    <script>
-      function updateSlider(slideAmount) {
-              console.log("insode the js function");
-              var sliderDiv = document.getElementById("sliderAmount");
-              sliderDiv.innerHTML = slideAmount;
-    }
-
-    function outputUpdateCostSlider(slider) {
-    document.querySelector('#selected_cost').value = slider;
-    }
-
-    function outputUpdateDurationSlider(slider) {
-    document.querySelector('#selected_duration').value = slider;
-    }
-    </script>
+    </div>
   </body>
 </html>

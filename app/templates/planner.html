@@ -12,6 +12,8 @@
 
   <!-- Bootstrap core CSS -->
   <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap theme -->
+  <link href="../static/bootstrap-theme.min.css" rel="stylesheet">
 
   <!-- Custom styles for this template -->
   <link href="../static/css/theme.css" rel="stylesheet">
@@ -42,6 +44,7 @@
         <li class="active"><a href="#">Home</a></li>
         <li><a href="#about">About</a></li>
         <li><a href="#contact">Contact</a></li>
+        <li><a href="#contact">{{ name }}</a></li>
       </ul>
     </div><!--/.nav-collapse -->
   </div>
@@ -67,7 +70,7 @@
               <th>{{ vacationplannerform.destination(class_='form-control') }}</th>
             </tr>
             <tr>
-              <th><label for='days'>I want to go on a vacation for </label></th>
+              <th><label for='days'>How many days would you like to go on vacation for ? </label></th>
               <th>{{ vacationplannerform.days(class_='form-control') }}</th>
             </tr>
             <tr>
@@ -87,6 +90,12 @@
                 {{ vacationplannerform.durationslider(min=0, max=1, oninput="outputUpdateDurationSlider(value)") }}
               </p></td>
             </tr>
+            <tr>
+              <th><label for="favoriteairline">How Important is it for you to travel via your favorite airline <i>{{ favoriteAirline }}</i> ?</label></th>
+              <td><p>
+                {{ vacationplannerform.favoriteairlineslider(min=0, max=1, oninput="outputUpdateFavoriteAirlineSlider(value)") }}
+              </p></td>
+            </tr>
             <tr><th><button type="submit" class="btn btn-primary btn-lg">Plan my vacation</button></th></tr>
             </thead>
           </table>
@@ -94,28 +103,58 @@
       </div>
     </div>
   </div><!-- /.col-sm-6 -->
+  <div class="col-sm-6">
+    {% for offer in offers %}
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Fly From <h4 class="panel-title">{{ offer.legs[0].segments[0].departureAirportLocation }}</h4>
+        <h4><a style="float:right; padding-left:10px;"> <t/> on {{ offer.legs[0].segments[0].departureTimeFormatted }} </a></h4>
+        <h4> <a style="float:right"> For {{ offer.totalFare }}$ </a></h4>
+        To <h4 class="panel-title">{{ offer.legs[0].segments[-1].arrivalAirportLocation }} </h4>
+      </div>
+      <div class="panel-body">
+        <div class="list-group">
+          <a href="#" class="list-group-item">
+            <h5 class="list-group-item-heading">
+              Duration : {% if offer.legs[0].travelDurationHours %}
+              {{ offer.legs[0].travelDurationHours }} hours
+              {% endif %}
+              {% if offer.legs[0].travelDurationMinutes %}
+              and {{ offer.legs[0].travelDurationMinutes}} minutes</h5>
+            {% endif %}
+          </a>
+          {% for segment in offer.legs[0].segments %}
+          <a href="#" class="list-group-item">
+            <h5 class="list-group-item-heading">{{ segment.airlineName }} | {{ segment.airlineCode }} {{ segment.flightNumber }} | {{ segment.departureAirportLocation }} - {{ segment.arrivalAirportLocation}}</h5>
+            <h6><i>{{ segment.arrivalTime }} - {{ segment.departureTime }}</i></h6>
+          </a>
+          {% endfor %}
+        </div>
+        <div class="list-group">
+          {% if offer.legs[1].travelDurationHours or offer.legs[1].travelDurationMinutes %}
+          <a href="#" class="list-group-item">
+            <h5 class="list-group-item-heading">
+              {% if offer.legs[1].travelDurationHours %}
+              Duration : {{ offer.legs[1].travelDurationHours }} hours
+              {% endif %}
+              {% if offer.legs[1].travelDurationMinutes %}
+              and {{ offer.legs[1].travelDurationMinutes}} minutes</h5>
+            {% endif %}
+          </a>
+          {% endif %}
+          {% for segment in offer.legs[1].segments %}
+          <a href="#" class="list-group-item">
+            <h5 class="list-group-item-heading">{{ segment.airlineName }} | {{ segment.airlineCode }} {{ segment.flightNumber }} | {{ segment.departureAirportLocation }} - {{ segment.arrivalAirportLocation}}</h5>
+            <h6><i>{{ segment.arrivalTime }} - {{ segment.departureTime }}</i></h6>
+          </a>
+          {% endfor %}
+        </div>
+        <div class="list-group">
+        </div>
+      </div>
+      {% endfor %}
+    </div>
   </div> <!-- /container -->
-
-
-  <!-- Bootstrap core JavaScript
-  ================================================== -->
-  <!-- Placed at the end of the document so the pages load faster -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-  <script src="../static/js/bootstrap.min.js"></script>
-  <script>
-      function updateSlider(slideAmount) {
-              console.log("insode the js function");
-              var sliderDiv = document.getElementById("sliderAmount");
-              sliderDiv.innerHTML = slideAmount;
-    }
-
-    function outputUpdateCostSlider(slider) {
-    document.querySelector('#selected_cost').value = slider;
-    }
-
-    function outputUpdateDurationSlider(slider) {
-    document.querySelector('#selected_duration').value = slider;
-    }
-    </script>
+</div>
 </body>
 </html>

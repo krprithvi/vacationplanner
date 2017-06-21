@@ -8,12 +8,14 @@ from .legs import Leg
 from .offers import Offer
 from .cost_tripattribute import Cost
 from .travelduration_tripattribute import TravelDuration
+from .favoriteairline_tripattribute import FavoriteAirline
 
 # Default page
 @app.route('/', methods=['GET','POST'])
 @app.route('/index', methods=['GET','POST'])
 def planner():
     error = False
+    name, favorite_airline = fetch_user_details()
     vacationplannerform = VacationPlannerForm(request.form)
     if vacationplannerform.is_submitted():
         if vacationplannerform.validate():
@@ -29,7 +31,8 @@ def planner():
                     # Create Trip Attribute objects
                     cost = Cost(vacationplannerform.costslider.data)
                     travelDuration = TravelDuration(vacationplannerform.durationslider.data)
-                    tripAttributes = [cost, travelDuration]
+                    favoriteAirline = FavoriteAirline(vacationplannerform.favoriteairlineslider.data, favorite_airline)
+                    tripAttributes = [cost, travelDuration, favoriteAirline]
                     offers = fetchflights_roundtrip(datePairs[i][0], datePairs[i][1], departureAirport, arrivalAirport, tripAttributes)
                     bestofferfortheday = rateOffersAndReturnBest(offers, tripAttributes)
                     bestoffers.append(bestofferfortheday)
@@ -39,15 +42,21 @@ def planner():
                 calibrateBestOffers(bestoffers, tripAttributes)
                 bestoffers = sorted(bestoffers, key=lambda offer: offer.rating, reverse=True)
 
-                return render_template("results.html", vacationplannerform=vacationplannerform, offers=bestoffers)
+                return render_template("results.html", vacationplannerform=vacationplannerform, offers=bestoffers, name=name, favoriteAirline=favorite_airline)
             except Exception as e:
-                print(str(e))
+                print("In planner controller" + str(e))
                 error = True
         else:
             error=True
     
 
-    return render_template("planner.html", vacationplannerform=vacationplannerform, error=error)
+    return render_template("planner.html", vacationplannerform=vacationplannerform, error=error, name=name, favoriteAirline=favorite_airline)
+
+def fetch_user_details():
+    return "Saurabh", "United"
+    #r = requests.get("https://watson-traveler-profile-service.prod.expedia.com/v2/traveler/38522057/attributes")
+    #user_details = r.json()
+    #return user_details["attributes"]["firstName"], user_details["attributes"]["i_preferred_airline_name"]
 
 def calibrateBestOffers(bestOffers, tripAttributes):
     legs = []
@@ -132,13 +141,15 @@ def fetchflights_roundtrip(departureDate, returnDate, departureAirport, arrivalA
     # Parse legs
     for leg in legs:
         segments = []
+        airlines = []
         for segment in leg["segments"]:
             segments.append(Segment(**{k:v for k, v in segment.items() if k in segmentAttributes}))
+            airlines.append(segment["airlineName"])
         travelDuration = leg["travelDuration"]
-        legsdict[leg["legId"]] = Leg(segments, travelDuration)
+        legsdict[leg["legId"]] = Leg(segments, travelDuration, max(airlines, key=airlines.count))
         # Get the trip Attributes for legs
         for tripAttribute in tripAttributes:
-            if tripAttribute.type == "Leg":
+            if tripAttribute.type == "Leg" and tripAttribute.parameter != "maxAirline":
                 tripAttribute.parsingInstruction(leg[tripAttribute.parameter])
 
     # Parse offers

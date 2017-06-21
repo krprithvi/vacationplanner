@@ -6,10 +6,12 @@ class Leg:
     travelDuration = None
     travelDurationHours = None
     travelDurationMinutes = None
+    maxAirline = None
 
-    def __init__(self, segments, travelDuration):
+    def __init__(self, segments, travelDuration, maxAirline):
         self.segments = segments
         self.travelDuration = travelDuration
+        self.maxAirline = maxAirline
         try:
             hours_minutes_regex = re.compile('\d+')
             time = hours_minutes_regex.findall(self.travelDuration)
